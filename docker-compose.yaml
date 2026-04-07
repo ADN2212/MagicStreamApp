@@ -7,7 +7,7 @@ services:
     container_name: magic-stream-web   # Nombre del contenedor
     restart: unless-stopped           # Reinicia automáticamente salvo que se detenga manualmente
     ports:
-      - "5173:5173"                   # <puerto_host>:<puerto_contenedor>
+      - "5173:5173"                   # <puerto_host>:<puerto_contenedor>, lease: a travez del puero 5173 del local se accede al puerto 5173 del contenedor.
     environment:
       API_URL: "http://${API_HOST_IP}:8080"           # Variables de entorno directa, sale del .env que esta en el root.
 
@@ -23,6 +23,6 @@ services:
       OPENIA_API_KEY: "${OPENIA_API_KEY}"
       BASE_PROMT_TEMPLATE: "RETURN a response using one of these words :{rankings}. The response should be a single word and should not contain any other text. The response should ba based on the following review"
       RECOMMENDED_MOVIE_LIMIT: "5" #Esto podria estar en una env var tambien
-      MONGODB_URI: "mongodb://host.docker.internal:27017"
+      MONGODB_URI: "mongodb://host.docker.internal:27017" #host.docker.internal permite que se puede acceder desde el contenedor al puerto espesificado.
       DATA_BASE_NAME: "MagicStreamApp"
       ALLOWED_ORIGINS: "${ALLOWED_ORIGINS}"
