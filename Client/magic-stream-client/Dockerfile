@@ -7,7 +7,7 @@ WORKDIR /app
 # Instala 'gettext', que provee el comando 'envsubst' para sustituir
 # variables de entorno en archivos de texto (como env.template.js)
 # --no-cache evita guardar el índice del repositorio, reduciendo el tamaño de la imagen
-#RUN apk --no-cache add gettext
+RUN apk --no-cache add gettext
 
 # Copia solo el package.json primero para aprovechar el cache de Docker:
 # si las dependencias no cambian, Docker reutiliza esta capa en builds posteriores
@@ -23,9 +23,9 @@ COPY . .
 # Documenta que la aplicación escucha en el puerto 5173 (puerto por defecto de Vite)
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host"]
+#CMD ["npm", "run", "dev", "--", "--host"]
 # Comando de inicio del contenedor:
 # 1. envsubst lee env.template.js, reemplaza las variables de entorno y genera env.js
 # 2. Luego arranca el servidor de desarrollo de Vite con --host para que sea
 #    accesible desde fuera del contenedor (no solo desde localhost)
-#CMD sh -c "envsubst < public/env.template.js > public/env.js && npm run dev -- --host"
+CMD sh -c "envsubst < public/env.template.js > public/env.js && npm run dev -- --host"
