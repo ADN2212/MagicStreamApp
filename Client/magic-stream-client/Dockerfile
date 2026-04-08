@@ -11,6 +11,7 @@ RUN apk --no-cache add gettext
 
 # Copia solo el package.json primero para aprovechar el cache de Docker:
 # si las dependencias no cambian, Docker reutiliza esta capa en builds posteriores
+# ojo, el asterisco permite tambien copiar el packaga-lock.json
 COPY package*.json ./
 
 # Instala las dependencias definidas en package.json

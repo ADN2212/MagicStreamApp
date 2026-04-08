@@ -12,6 +12,11 @@ services:
       API_URL: "http://${API_HOST_IP}:8080"           # Variables de entorno directa, sale del .env que esta en el root.
 
   api:
+    build:
+      context: .                      # Directorio donde está el Dockerfile
+      dockerfile: Dockerfile
+    depends_on:
+      - db
     image: magic-stream-api:1.0.0
     container_name: magic-stream-api
     ports:
@@ -23,6 +28,35 @@ services:
       OPENIA_API_KEY: "${OPENIA_API_KEY}"
       BASE_PROMT_TEMPLATE: "RETURN a response using one of these words :{rankings}. The response should be a single word and should not contain any other text. The response should ba based on the following review"
       RECOMMENDED_MOVIE_LIMIT: "5" #Esto podria estar en una env var tambien
-      MONGODB_URI: "mongodb://host.docker.internal:27017" #host.docker.internal permite que se puede acceder desde el contenedor al puerto espesificado.
-      DATA_BASE_NAME: "MagicStreamApp"
+      MONGODB_URI: mongodb://db:27017 #esta es la base uri de la base de datos dentro de su contenerdor
+      #MONGODB_URI: "mongodb://host.docker.internal:27017" #host.docker.internal permite que se puede acceder desde el contenedor al puerto espesificado.
+      DATA_BASE_NAME: "magic-stream-movies"
       ALLOWED_ORIGINS: "${ALLOWED_ORIGINS}"
+
+  db:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - movies:/data/db #allows data percistence when the containers are show down
+    healthcheck:
+      test: ["CMD", "mogosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 4
+
+  seed:
+    image: mongo
+    container_name: seed_mongo
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+    volumes:
+      - ./seed:/seed-data
+    #notece como 
+    command: mongosh mongodb://db:27017/magic-stream-movies /seed-data/seed.js
+    restart: no 
+
+volumes:
+    movies:
