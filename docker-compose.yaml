@@ -30,7 +30,7 @@ services:
       RECOMMENDED_MOVIE_LIMIT: "5" #Esto podria estar en una env var tambien
       MONGODB_URI: mongodb://db:27017 #esta es la base uri de la base de datos dentro de su contenerdor
       #MONGODB_URI: "mongodb://host.docker.internal:27017" #host.docker.internal permite que se puede acceder desde el contenedor al puerto espesificado.
-      DATA_BASE_NAME: "magic-stream-movies"
+      DATA_BASE_NAME: "magic-stream-movies" #Se supone que esto sustituye la env var que esta en el .env del server.
       ALLOWED_ORIGINS: "${ALLOWED_ORIGINS}"
 
   db:
@@ -53,7 +53,7 @@ services:
     #   db:
     #     condition: service_healthy
     volumes:
-      - ./seed:/seed-data
+      - ./seed:/seed-data #dentro del contenedor la carpeta es seed-data
     #notece como 
     command: mongosh mongodb://db:27017/magic-stream-movies /seed-data/seed.js
     restart: no 
