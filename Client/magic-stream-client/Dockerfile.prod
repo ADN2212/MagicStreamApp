@@ -1,0 +1,45 @@
+# Claude: Primera etapa del build, usa Node.js 20 sobre Alpine Linux.
+# "AS build" le da un nombre a esta etapa para referenciarla después.
+FROM node:20-alpine AS build
+
+# Claude: Establece /app como directorio de trabajo dentro del contenedor.
+WORKDIR /app
+
+# Claude: Copia package.json y package-lock.json antes que el resto del código
+# para aprovechar el cache de Docker. Si las dependencias no cambian, esta capa se reutiliza.
+COPY package*.json ./
+
+# Claude: Instala las dependencias usando npm ci, que es más estricto que npm install:
+# usa exactamente las versiones del package-lock.json, ideal para entornos de CI/CD.
+RUN npm ci
+
+# Claude: Copia el resto del código fuente al contenedor.
+COPY . .
+
+# Claude: Ejecuta el build de producción de la app (genera los archivos estáticos en /app/dist).
+RUN npm run build
+
+
+# --- Production stage ---
+
+# Claude: Segunda etapa, usa Nginx sobre Alpine como servidor web de producción.
+# Al usar multi-stage build, la imagen final NO incluye Node.js ni el código fuente,
+# solo los archivos estáticos compilados. Esto la hace mucho más ligera y segura.
+FROM nginx:stable-alpine
+
+# Claude: Copia los archivos estáticos generados en la etapa "build" al directorio
+# que Nginx usa para servir contenido HTML.
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Claude: Copia el template de variables de entorno al directorio de Nginx,
+# para que esté disponible en tiempo de ejecución.
+COPY public/env.template.js /usr/share/nginx/html/env.template.js
+
+# Claude: Comando de inicio del contenedor. Hace dos cosas:
+# 1. envsubst reemplaza las variables de entorno en el template y genera env.js.
+# 2. Inicia Nginx en primer plano ("daemon off" es necesario para que Docker
+#    mantenga el contenedor vivo).
+CMD sh -c "envsubst < /usr/share/nginx/html/env.template.js > /usr/share/nginx/html/env.js && nginx -g 'daemon off;'"
+
+# Claude: Documenta que el contenedor expone el puerto 80, que es el puerto por defecto de Nginx.
+EXPOSE 80

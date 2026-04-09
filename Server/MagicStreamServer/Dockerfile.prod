@@ -1,0 +1,42 @@
+# Claude: Primera etapa del build, usa Go 1.24 sobre Alpine Linux.
+# "AS build" le da un nombre a esta etapa para referenciarla después.
+FROM golang:1.24-alpine AS build
+
+# Claude: Establece /app como directorio de trabajo dentro del contenedor.
+WORKDIR /app
+
+# Claude: Copia solo los archivos de dependencias primero para aprovechar el cache de Docker.
+# Si go.mod y go.sum no cambian, la descarga de dependencias se reutiliza en builds posteriores.
+COPY go.mod go.sum ./
+
+# Claude: Descarga todas las dependencias declaradas en go.mod.
+# Equivalente a "npm install" pero para Go.
+RUN go mod download
+
+# Claude: Copia el resto del código fuente al contenedor.
+# Se hace después de descargar dependencias para no invalidar el cache innecesariamente.
+COPY . .
+
+# Claude: Compila el código Go y genera un binario ejecutable llamado "api-golang".
+# Un binario de Go es autocontenido, no necesita runtime externo para ejecutarse.
+RUN go build -o api-golang
+
+
+# Claude: Segunda etapa, usa Alpine Linux puro como imagen de producción.
+# Al ser un binario autocontenido, no necesitamos Go en producción,
+# lo que hace la imagen final extremadamente ligera.
+FROM alpine:latest
+
+# Claude: Establece /app como directorio de trabajo en el contenedor de producción.
+WORKDIR /app
+
+# Claude: Copia únicamente el binario compilado desde la etapa "build".
+# La imagen final NO incluye Go, el código fuente ni las dependencias.
+COPY --from=build /app/api-golang .
+
+# Claude: Documenta que el contenedor expone el puerto 8080,
+# que es donde la API estará escuchando.
+EXPOSE 8080
+
+# Claude: Comando de inicio del contenedor, ejecuta directamente el binario compilado.
+CMD ["./api-golang"]

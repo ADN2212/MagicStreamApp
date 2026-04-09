@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +27,9 @@ var validate = validator.New()
 
 func GetMovies(client *mongo.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		fmt.Println("Getting movies")
+
 		ctx, cancel := context.WithTimeout(c, 100*time.Second)
 		defer cancel()
 

@@ -1,0 +1,75 @@
+services:
+
+  # ─── Servicio Frontend ───────────────────────────────────────────
+  web:
+    # Claude: Nombre y tag de la imagen que se generará al hacer el build.
+    image: magic-stream-web-dev:1.0.0
+
+    # Claude: Nombre del contenedor que aparecerá en "docker ps".
+    container_name: magic-stream-web-dev
+
+    # Claude: Mapea el puerto 5173 del host al puerto 5173 del contenedor (puerto por defecto de Vite).
+    ports:
+      - "5173:5173"
+
+    build:
+      # Claude: Directorio donde Docker buscará el contexto de build (código fuente del frontend).
+      context: ./Client/magic-stream-client
+
+      # Claude: Nombre del Dockerfile a usar. Al ser ".dev" está optimizado para desarrollo,
+      # probablemente sin multi-stage build y con hot reload habilitado.
+      dockerfile: Dockerfile.dev
+
+    develop:
+      watch:
+        # Claude: Si package.json cambia (nueva dependencia agregada),
+        # reconstruye la imagen completa para reflejar los cambios.
+        - path: ./Client/magic-stream-client/package.json
+          action: rebuild
+
+        # Claude: Si package-lock.json cambia, reconstruye la imagen
+        # para asegurar que las versiones exactas de dependencias se instalen.
+        - path: ./Client/magic-stream-client/package-lock.json
+          action: rebuild
+
+        # Claude: Observa cambios en cualquier archivo del frontend y los sincroniza
+        # directamente al contenedor en /app sin necesidad de reconstruir la imagen.
+        # Esto habilita el hot reload en tiempo real.
+        - path: ./Client/magic-stream-client
+          target: /app
+          action: sync
+
+  # ─── Servicio API ─────────────────────────────────────────────────
+  api:
+    # Claude: Nombre y tag de la imagen que se generará al hacer el build.
+    image: magic-stream-api-dev:1.0.0
+
+    # Claude: Nombre del contenedor que aparecerá en "docker ps".
+    container_name: magic-stream-api-dev
+
+    build:
+      # Claude: Directorio donde Docker buscará el contexto de build (código fuente del backend en Go).
+      context: ./Server/MagicStreamServer
+
+      # Claude: Nombre del Dockerfile a usar, optimizado para desarrollo.
+      # Probablemente usa "air" o similar para hot reload en Go. YO: En este caso no se uso air, pero es algo que implemetre luego.
+      dockerfile: Dockerfile.dev
+
+    develop:
+      watch:
+        # Claude: Si go.mod cambia (nueva dependencia de Go agregada),
+        # reconstruye la imagen completa para descargar las nuevas dependencias.
+        - path: ./Server/MagicStreamServer/go.mod
+          action: rebuild
+
+        # Claude: Si go.sum cambia, reconstruye la imagen para garantizar
+        # la integridad y versiones exactas de las dependencias de Go.
+        - path: ./Server/MagicStreamServer/go.sum
+          action: rebuild
+
+        # Claude: Observa cambios en cualquier archivo del backend y los sincroniza
+        # directamente al contenedor en /app, permitiendo que el hot reload de Go
+        # detecte los cambios y recompile automáticamente.
+        - path: ./Server/MagicStreamServer
+          target: /app
+          action: sync
