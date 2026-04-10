@@ -3,7 +3,7 @@ services:
   # ─── Servicio Frontend ───────────────────────────────────────────
   web:
     # Claude: Nombre y tag de la imagen que se generará al hacer el build.
-    image: magic-stream-web-dev:1.0.0
+    image: magic-stream-web-dev:1.0.1
 
     # Claude: Nombre del contenedor que aparecerá en "docker ps".
     container_name: magic-stream-web-dev
@@ -42,7 +42,7 @@ services:
   # ─── Servicio API ─────────────────────────────────────────────────
   api:
     # Claude: Nombre y tag de la imagen que se generará al hacer el build.
-    image: magic-stream-api-dev:1.0.0
+    image: magic-stream-api-dev:1.0.1
 
     # Claude: Nombre del contenedor que aparecerá en "docker ps".
     container_name: magic-stream-api-dev
