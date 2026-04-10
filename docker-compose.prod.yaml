@@ -1,17 +1,40 @@
 services:
+  # ─── Servicio Frontend ───────────────────────────────────────────
   web:
+    # Claude: Imagen comentada, posiblemente una versión anterior o de otro desarrollador.
     #image: gavinlon/magic-stream-web-prod:1.0.0
-    image: gavinlon/magic-stream-web-prod:${IMAGE_TAG:-latest}
+
+    # Claude: Imagen de producción del frontend alojada en Docker Hub bajo el usuario "adn221294".
+    # ${IMAGE_TAG:-latest} es una variable de entorno con valor por defecto:
+    # - Si IMAGE_TAG está definida (ej: "1.0.2"), usa ese valor → adn221294/magic-stream-web-prod:1.0.2
+    # - Si IMAGE_TAG NO está definida, usa "latest"           → adn221294/magic-stream-web-prod:latest
+    image: adn221294/magic-stream-web-prod:${IMAGE_TAG:-latest}
+
+    # Claude: Nombre del contenedor que aparecerá en "docker ps".
     container_name: magic-stream-web-prod
 
+    # Claude: Mapea el puerto 8081 del host al puerto 80 del contenedor (puerto de Nginx).
+    # Se accede a la app desde http://localhost:8081
     ports: 
       - "8081:80"
+
+    # Claude: Reinicia el contenedor automáticamente en cualquier situación:
+    # si se cae, si el servidor se reinicia, etc. Ideal para producción.
     restart: always
 
+  # ─── Servicio API ─────────────────────────────────────────────────
   api:
+    # Claude: Imagen comentada, posiblemente una versión anterior o de otro desarrollador.
     #image: gavinlon/magic-stream-api-prod:1.0.0
-    image: gavinlon/magic-stream-api-prod:${IMAGE_TAG:-latest}
-    container_name: magic-stream-api-prod
-    
-    restart: always
 
+    # Claude: Imagen de producción del backend alojada en Docker Hub bajo el usuario "adn221294".
+    # Usa la misma lógica de IMAGE_TAG que el servicio web, lo que permite
+    # actualizar ambos servicios a la misma versión con una sola variable.
+    image: adn221294/magic-stream-api-prod:${IMAGE_TAG:-latest}
+
+    # Claude: Nombre del contenedor que aparecerá en "docker ps".
+    container_name: magic-stream-api-prod
+
+    # Claude: Reinicia el contenedor automáticamente en cualquier situación.
+    # Garantiza que la API siempre esté disponible en producción.
+    restart: always
