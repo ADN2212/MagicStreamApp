@@ -29,7 +29,9 @@ services:
   api:
     # Claude: Imagen comentada, posiblemente una versión anterior o de otro desarrollador.
     #image: gavinlon/magic-stream-api-prod:1.0.0
-
+    build:
+      context: ./Server/MagicStreamServer
+      dockerfile: Dockerfile.Prod
     # Claude: Imagen de producción del backend alojada en Docker Hub bajo el usuario "adn221294".
     # Usa la misma lógica de IMAGE_TAG que el servicio web, lo que permite
     # actualizar ambos servicios a la misma versión con una sola variable.
