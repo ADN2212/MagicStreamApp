@@ -29,6 +29,7 @@ func GetMovies(client *mongo.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		fmt.Println("Getting movies")
+		fmt.Println("Just after that shit")
 
 		ctx, cancel := context.WithTimeout(c, 100*time.Second)
 		defer cancel()
