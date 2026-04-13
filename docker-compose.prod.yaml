@@ -22,6 +22,9 @@ services:
     # si se cae, si el servidor se reinicia, etc. Ideal para producción.
     restart: always
 
+    env_file:
+      - .env
+
   # ─── Servicio API ─────────────────────────────────────────────────
   api:
     # Claude: Imagen comentada, posiblemente una versión anterior o de otro desarrollador.
@@ -38,3 +41,6 @@ services:
     # Claude: Reinicia el contenedor automáticamente en cualquier situación.
     # Garantiza que la API siempre esté disponible en producción.
     restart: always
+
+    env_file:
+      - .env
