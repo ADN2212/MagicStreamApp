@@ -40,10 +40,15 @@ func GetMovies(client *mongo.Client) gin.HandlerFunc {
 
 		//fmt.Println(err.Error())
 
+		fmt.Println("Here-1")
+
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch movies."})
 		}
+
+		fmt.Println("Here-2")
+
 		defer cursor.Close(ctx)
 
 		var movies []models.Movie
