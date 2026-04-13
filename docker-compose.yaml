@@ -56,7 +56,7 @@ services:
       - ./seed:/seed-data #dentro del contenedor la carpeta es seed-data
     #notece como en la ultima parte 
     command: mongosh mongodb://db:27017/magic-stream-movies /seed-data/seed.js
-    restart: no 
+    #restart: 'no' 
 
 volumes:
     movies:
