@@ -44,6 +44,8 @@ func main() {
 		log.Println("Allowed Origin: http://localhost:5173")
 	}
 
+	fmt.Println(origins)
+
 	config := cors.Config{}
 	config.AllowOrigins = origins
 	config.AllowMethods = []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}
