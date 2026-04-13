@@ -36,6 +36,9 @@ func GetMovies(client *mongo.Client) gin.HandlerFunc {
 		var movieCollection *mongo.Collection = database.OpenCollection("movies", client)
 
 		cursor, err := movieCollection.Find(ctx, bson.D{})
+		
+
+		fmt.Println(err.Error())
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch movies."})
