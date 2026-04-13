@@ -1,8 +1,8 @@
 services:
   web:
-    build:
-      context: .                      # Directorio donde está el Dockerfile
-      dockerfile: Dockerfile          # Nombre del Dockerfile
+    # build:
+    #   context: .                      # Directorio donde está el Dockerfile
+    #   dockerfile: Dockerfile.prod          # Nombre del Dockerfile
     image: magic-stream-web:1.0.0      # Nombre y tag de la imagen generada
     container_name: magic-stream-web   # Nombre del contenedor
     restart: unless-stopped           # Reinicia automáticamente salvo que se detenga manualmente
@@ -12,9 +12,9 @@ services:
       API_URL: "http://${API_HOST_IP}:8080"           # Variables de entorno directa, sale del .env que esta en el root.
 
   api:
-    build:
-      context: .                      # Directorio donde está el Dockerfile
-      dockerfile: Dockerfile
+    # build:
+    #   context: .                      # Directorio donde está el Dockerfile
+    #   dockerfile: Dockerfile.prod
     depends_on:
       - db
     image: magic-stream-api:1.0.0
@@ -56,7 +56,7 @@ services:
       - ./seed:/seed-data #dentro del contenedor la carpeta es seed-data
     #notece como en la ultima parte 
     command: mongosh mongodb://db:27017/magic-stream-movies /seed-data/seed.js
-    #restart: 'no' 
+    restart: "no" 
 
 volumes:
     movies:
